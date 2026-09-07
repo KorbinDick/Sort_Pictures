@@ -13,6 +13,19 @@
 ##########################################################################################################################################################
 
 
+####################################################################################################
+# Explanation of imports/modules:
+# pathlib -> represents paths as objects, instead of strings like usually done in other modules
+# reference: https://docs.python.org/3/library/pathlib.html
+# PIL -> for image processing, inspecting metadata on .jpg/jpeg/png files
+# reference: https://pillow.readthedocs.io/en/stable/
+# datetime -> for working with dates and times, formatting, and extracting date information from files
+# reference: https://docs.python.org/3/library/datetime.html
+#
+#
+#
+#
+####################################################################################################
 from pathlib import Path
 from PIL import Image
 import datetime
@@ -30,13 +43,6 @@ def get_video_date(file_path):
         return datetime.datetime.fromtimestamp(file_path.stat().st_mtime)
     except Exception:
         return None
-
-
-
-
-
-
-
 
 
 
