@@ -4,6 +4,8 @@
 # 
 # Given a path of a folder that holds disorganzied pictures/videos, this script will scan all content of the directory and subdirectories, extract
 # the creation data of each piece of media, and then create folders based on the data etxracted, grouped by month and year
+
+# Possible future implementation is to create another new folder to put all non-avi/jpg/jpeg/png/mp4/mov files into
 #
 #
 #
@@ -15,8 +17,14 @@ from pathlib import Path
 from PIL import Image
 import datetime
 
+#holds the original path for the folder to be organized
 folder_path = Path(r"E:\OBX_2026\100D5000")
 
+
+
+
+
+# functions
 def get_video_date(file_path):
     try:
         return datetime.datetime.fromtimestamp(file_path.stat().st_mtime)
@@ -36,7 +44,7 @@ def get_video_date(file_path):
 
 
 
-
+# main script execution
 if folder_path.exists() and folder_path.is_dir():
     print(f"Scanning folder and subfolders: {folder_path}\n")
     
