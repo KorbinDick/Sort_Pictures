@@ -17,13 +17,18 @@
 # Explanation of imports/modules:
 # pathlib -> represents paths as objects, instead of strings like usually done in other modules
 # reference: https://docs.python.org/3/library/pathlib.html
+
 # PIL -> for image processing, inspecting metadata on .jpg/jpeg/png files
 # reference: https://pillow.readthedocs.io/en/stable/
+
 # datetime -> for working with dates and times, formatting, and extracting date information from files
 # reference: https://docs.python.org/3/library/datetime.html
+
+# platform -> for getting information about the operating system
+# reference :
 #
-#
-#
+# Other references:
+# https://stackoverflow.com/questions/237079/how-do-i-get-file-creation-and-modification-date-times
 #
 #
 #
@@ -31,6 +36,8 @@
 from pathlib import Path
 from PIL import Image
 import datetime
+import platform
+from statx import statx
 
 #holds the original path for the folder to be organized
 folder_path = Path(r"E:\OBX_2026\100D5000")
@@ -41,10 +48,16 @@ folder_path = Path(r"E:\OBX_2026\100D5000")
 
 # functions
 def get_video_date(file_path):
-    try:
-        return datetime.datetime.fromtimestamp(file_path.stat().st_mtime)
-    except Exception:
-        return None
+    if platform.system() == "Windows":
+        try:
+            return datetime.datetime.fromtimestamp(file_path.stat().st_ctime)
+        except Exception:
+            return None
+    elif platform.system() == "Linux":
+        try:
+            return datetime.datetime.fromtimestamp(file_path.stat().st_mtime)
+        except Exception:
+            return None
 
 
 
