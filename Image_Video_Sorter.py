@@ -37,7 +37,7 @@ from pathlib import Path
 from PIL import Image
 import datetime
 import platform
-from statx import statx
+ #from statx import statx
 
 #holds the original path for the folder to be organized
 folder_path = Path(r"E:\OBX_2026\100D5000")
@@ -50,7 +50,7 @@ folder_path = Path(r"E:\OBX_2026\100D5000")
 def get_video_date(file_path):
     if platform.system() == "Windows":
         try:
-            return datetime.datetime.fromtimestamp(file_path.stat().st_ctime)
+            return datetime.datetime.fromtimestamp(file_path.stat().st_mtime)
         except Exception:
             return None
     elif platform.system() == "Linux":
