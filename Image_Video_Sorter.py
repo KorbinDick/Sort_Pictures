@@ -37,10 +37,16 @@ from pathlib import Path
 from PIL import Image
 import datetime
 import platform
+import sys
  #from statx import statx
 
 #holds the original path for the folder to be organized
-folder_path = Path(r"E:\OBX_2026\100D5000")
+input_folder_path = Path(r"E:\OBX_2026\100D5000")
+output_folder_path = Path(r"C:\Users\Korbi\Desktop\OBX_2026_Organized")
+
+oldest_folder_year = 2000
+newest_folder_year = 2026
+
 
 
 
@@ -60,23 +66,59 @@ def get_video_date(file_path):
             return None
 
 
+def confirm_action(prompt="Do you want to continue?", default=True):
+    valid_responses = {"yes": True, "y": True, "no": False, "n": False}
+    
+    if default is True:
+        prompt_suffix = " [Y/n]: "
+    elif default is False:
+        prompt_suffix = " [y/N]: "
+    else:
+        prompt_suffix = " [y/n]: "
+
+    while True:
+        user_input = input(prompt + prompt_suffix).strip().lower()
+        
+        if user_input == "" and default is not None:
+            return default
+            
+        if user_input in valid_responses:
+            return valid_responses[user_input]
+            
+        print("Invalid input. Please enter 'y' or 'n'.")
+
+
 
 
 
 
 
 # main script execution
-if folder_path.exists() and folder_path.is_dir():
-    print(f"Scanning folder and subfolders: {folder_path}\n")
+if confirm_action(f"Do you want to create/overwrite content at folder path {output_folder_path}?"):
+    for i in range(newest_folder_year - oldest_folder_year + 1):
+        print("poo")
+        # folder_name = f""
+        # folder_path = output_folder_path / folder_name
+        # folder_path.mkdir(parents=True, exist_ok=True)
+else:
+    print(f"Script has been aborted and will not create/overwrite folders/file content at {output_folder_path}")
+    sys.exit(1)
+
+
+
+
+
+if input_folder_path.exists() and input_folder_path.is_dir():
+    print(f"Scanning folder and subfolders: {input_folder_path}\n")
     
-    for file_path in folder_path.rglob("*"):
+    for file_path in input_folder_path.rglob("*"):
         if not file_path.is_file():
             continue
             
         ext = file_path.suffix.lower()
         
         if ext in (".jpg", ".jpeg", ".png"):
-            print(f"[IMAGE] {file_path.relative_to(folder_path)}")
+            print(f"[IMAGE] {file_path.relative_to(input_folder_path)}")
             try:
                 with Image.open(file_path) as img:
                     date_taken = None
@@ -95,7 +137,7 @@ if folder_path.exists() and folder_path.is_dir():
             print("-" * 50)
             
         elif ext in (".mov", ".mp4", ".avi"):
-            print(f"[VIDEO] {file_path.relative_to(folder_path)}")
+            print(f"[VIDEO] {file_path.relative_to(input_folder_path)}")
             date_taken = get_video_date(file_path)
             print(f"   -> Date Taken: {date_taken or 'No metadata date found'}")
             print("-" * 50)
