@@ -38,7 +38,6 @@ from PIL import Image
 import datetime
 import platform
 import sys
- #from statx import statx
 
 #holds the original path for the folder to be organized
 input_folder_path = Path(r"E:\OBX_2026\100D5000")
@@ -47,45 +46,33 @@ output_folder_path = Path(r"C:\Users\Korbi\Desktop\OBX_2026_Organized")
 oldest_folder_year = 2000
 newest_folder_year = 2026
 
-
+months = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
 
 
 
 
 # functions
 def get_video_date(file_path):
-    if platform.system() == "Windows":
-        try:
-            return datetime.datetime.fromtimestamp(file_path.stat().st_mtime)
-        except Exception:
-            return None
-    elif platform.system() == "Linux":
         try:
             return datetime.datetime.fromtimestamp(file_path.stat().st_mtime)
         except Exception:
             return None
 
 
-def confirm_action(prompt="Do you want to continue?", default=True):
-    valid_responses = {"yes": True, "y": True, "no": False, "n": False}
-    
-    if default is True:
-        prompt_suffix = " [Y/n]: "
-    elif default is False:
-        prompt_suffix = " [y/N]: "
-    else:
-        prompt_suffix = " [y/n]: "
+def confirm_action(prompt="Do you want to continue?"):
+    valid_responses = {"yes": True, "y": True, "Yes": True, "no": False, "n": False}
+    prompt_suffix = " [Y/n]: "
 
     while True:
-        user_input = input(prompt + prompt_suffix).strip().lower()
+        user_input = input(prompt + prompt_suffix).strip()
         
-        if user_input == "" and default is not None:
-            return default
+        if user_input == "":
+            return True
             
         if user_input in valid_responses:
             return valid_responses[user_input]
             
-        print("Invalid input. Please enter 'y' or 'n'.")
+        print("Invalid input. Please enter 'y' or 'n'")
 
 
 
@@ -95,11 +82,14 @@ def confirm_action(prompt="Do you want to continue?", default=True):
 
 # main script execution
 if confirm_action(f"Do you want to create/overwrite content at folder path {output_folder_path}?"):
-    for i in range(newest_folder_year - oldest_folder_year + 1):
         print("poo")
-        # folder_name = f""
-        # folder_path = output_folder_path / folder_name
-        # folder_path.mkdir(parents=True, exist_ok=True)
+        output_folder_path.mkdir(parents=True, exist_ok=True)
+        for i in range(newest_folder_year - oldest_folder_year + 1):
+            year = oldest_folder_year + i
+            for month in months.keys():
+                month_folder_path = output_folder_path / str(year) / month
+                month_folder_path.mkdir(parents=True, exist_ok=True)
+
 else:
     print(f"Script has been aborted and will not create/overwrite folders/file content at {output_folder_path}")
     sys.exit(1)
