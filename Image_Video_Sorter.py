@@ -61,14 +61,6 @@ log_folder = output_folder_path / "log"
 exit_keys = ['esc', 'space']
 
 # functions
-def get_video_date(file_path):
-        try:
-            return datetime.datetime.fromtimestamp(file_path.stat().st_mtime)
-        except Exception:
-            return None
-
-
-
 def confirm_action(prompt):
     valid_responses = {"yes": True, "y": True, "no": False, "n": False}
     prompt_suffix = " [Y/n]: "
@@ -151,12 +143,10 @@ if input_folder_path.exists() and input_folder_path.is_dir():
                     print(f"Copying file to: {goal_path}\n")
                     shutil.copy(file_path, goal_path)
                         
-            elif ext in (".mov", ".mp4", ".avi"):
+            elif ext in (".mov", ".mp4", ".avi", ".mts"):
                 print(f"[VIDEO] {file_path.relative_to(input_folder_path)}")
-                date_taken = get_video_date(file_path)
-                print(f"Date Taken: {date_taken or 'No metadata date found'}")
-            
-            
+                date_taken = datetime.datetime.fromtimestamp(file_path.stat().st_mtime)
+                print(f"Date Taken: {date_taken}")
                 video_year = date_taken.strftime("%Y")
                 video_month = date_taken.strftime("%m")
                 base_path = output_folder_path / video_year / list(months.keys())[int(video_month)-1]
