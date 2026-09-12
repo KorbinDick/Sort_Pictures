@@ -39,6 +39,9 @@ from PIL import Image
 import datetime
 import sys
 import shutil
+import keyboard
+import os
+
 
 #holds the original path for the folder to be organized
 input_folder_path = Path(r"E:\Drives")
@@ -55,6 +58,7 @@ non_image_folder = output_folder_path / "non_image"
 
 log_folder = output_folder_path / "log"
 
+exit_keys = ['esc', 'space']
 
 # functions
 def get_video_date(file_path):
@@ -77,6 +81,11 @@ def confirm_action(prompt):
             return valid_responses[user_input]
         print("Invalid input. Please enter 'y' or 'n'")
 
+def user_interrupt(key):
+    if key == keyboard.Key.esc:
+        print("\nUSER EXIT, SCRIPT HAS BEEN ABORTED.")
+        os._exit(0) 
+
 
 # main script execution
 if input_folder_path.exists() and input_folder_path.is_dir():
@@ -97,84 +106,89 @@ if input_folder_path.exists() and input_folder_path.is_dir():
         sys.exit(1)
 
 
-
-
-
-
     print(f"\nScanning folder and subfolders: {input_folder_path}\n")
-    
+
+
+
+
     for file_path in input_folder_path.rglob("*"):
-        if not file_path.is_file():
-            continue
+                if not file_path.is_file():
+                    continue
 
-        try:
-            
-            ext = file_path.suffix.lower()
-        
-            if ext in (".jpg", ".jpeg", ".png"):
-                print(f"[IMAGE] {file_path.relative_to(input_folder_path)}")
-                with Image.open(file_path) as img:
-                    date_taken = None
-                    
-                    if ext in (".jpg", ".jpeg"):
-                        exif_data = img._getexif()
-                        date_taken = exif_data.get(36867) if exif_data else None
-                    
-                    elif ext == ".png":
-                        info = img.info
-                        date_taken = info.get("Creation Time") or info.get("date:create")
+
+                if any(keyboard.is_pressed(key) for key in exit_keys):
+                    print("\nUSER EXIT. SCRIPT ABORTED. POO.")
+                    sys.exit(0)
+                try:
                         
+                    ext = file_path.suffix.lower()
                     
-                    print(f"Date Taken: {date_taken}")
-                    image_year = date_taken.split(":")[0]
-                    image_month = date_taken.split(":")[1]
-                    base_path = output_folder_path / image_year / list(months.keys())[int(image_month)-1]
-                    name_suffix = f"{file_path.stem}{file_path.suffix}"
-                    goal_path = base_path / name_suffix
-                    copies = 1
-                    while goal_path.exists():
-                        copy_add = f"_copy{copies}"
-                        goal_path = base_path / f"{file_path.stem}{copy_add}{file_path.suffix}"
-                        copies += 1
-                    print(f"Copying file to: {goal_path}\n")
-                    shutil.copy(file_path, goal_path)
+                    if ext in (".jpg", ".jpeg", ".png", ".cr2"):
+                        print(f"[IMAGE] {file_path.relative_to(input_folder_path)}")
+                        with Image.open(file_path) as img:
+                            date_taken = None
+                                
+                            if ext in (".jpg", ".jpeg"):
+                                exif_data = img._getexif()
+                                date_taken = exif_data.get(36867) if exif_data else None
+                                
+                            elif ext == ".png":
+                                info = img.info
+                                date_taken = info.get("Creation Time") or info.get("date:create")
+                                    
+                                
+                            print(f"Date Taken: {date_taken}")
+                            image_year = date_taken.split(":")[0]
+                            image_month = date_taken.split(":")[1]
+                            base_path = output_folder_path / image_year / list(months.keys())[int(image_month)-1]
+                            name_suffix = f"{file_path.stem}{file_path.suffix}"
+                            goal_path = base_path / name_suffix
+                            copies = 1
+                            while goal_path.exists():
+                                copy_add = f"_copy{copies}"
+                                goal_path = base_path / f"{file_path.stem}{copy_add}{file_path.suffix}"
+                                copies += 1
+                            print(f"Copying file to: {goal_path}\n")
+                            shutil.copy(file_path, goal_path)
+                        
+                    elif ext in (".mov", ".mp4", ".avi"):
+                        print(f"[VIDEO] {file_path.relative_to(input_folder_path)}")
+                        date_taken = get_video_date(file_path)
+                        print(f"Date Taken: {date_taken or 'No metadata date found'}")
             
-            elif ext in (".mov", ".mp4", ".avi"):
-                print(f"[VIDEO] {file_path.relative_to(input_folder_path)}")
-                date_taken = get_video_date(file_path)
-                print(f"Date Taken: {date_taken or 'No metadata date found'}")
-
-
-                video_year = date_taken.strftime("%Y")
-                video_month = date_taken.strftime("%m")
-                base_path = output_folder_path / video_year / list(months.keys())[int(video_month)-1]
-                name_suffix = f"{file_path.stem}{file_path.suffix}"
-                goal_path = base_path / name_suffix
-                copies = 1
-                while goal_path.exists():
-                    copy_add = f"_copy{copies}"
-                    goal_path = base_path / f"{file_path.stem}{copy_add}{file_path.suffix}"
-                    copies += 1
-                print(f"Copying file to: {goal_path}\n")
-                shutil.copy(file_path, goal_path)
             
+                        video_year = date_taken.strftime("%Y")
+                        video_month = date_taken.strftime("%m")
+                        base_path = output_folder_path / video_year / list(months.keys())[int(video_month)-1]
+                        name_suffix = f"{file_path.stem}{file_path.suffix}"
+                        goal_path = base_path / name_suffix
+                        copies = 1
+                        while goal_path.exists():
+                            copy_add = f"_copy{copies}"
+                            goal_path = base_path / f"{file_path.stem}{copy_add}{file_path.suffix}"
+                            copies += 1
+                        print(f"Copying file to: {goal_path}\n")
+                        shutil.copy(file_path, goal_path)
+                        
+            
+                    else:
+                        print(f"[OTHER] {file_path.relative_to(input_folder_path)}")
+                        name_suffix = f"{file_path.stem}{file_path.suffix}"
+                        goal_path = non_image_folder / name_suffix
+                        copies = 1
+                        while goal_path.exists():
+                            copy_add = f"_copy{copies}"
+                            goal_path = non_image_folder / f"{file_path.stem}{copy_add}{file_path.suffix}"
+                            copies += 1
+                        print(f"Copying file to: {goal_path}\n")
+                        shutil.copy(file_path, goal_path)
+            
+                except Exception as e:
+                    print(f"Error reading metadata: {e}")
+                    print(f"Content that failed to be sorted: {file_path}")
+                    shutil.copy(file_path, log_folder / f"{file_path.stem}{file_path.suffix}")
 
-            else:
-                print(f"[OTHER] {file_path.relative_to(input_folder_path)}")
-                name_suffix = f"{file_path.stem}{file_path.suffix}"
-                goal_path = non_image_folder / name_suffix
-                copies = 1
-                while goal_path.exists():
-                    copy_add = f"_copy{copies}"
-                    goal_path = non_image_folder / f"{file_path.stem}{copy_add}{file_path.suffix}"
-                    copies += 1
-                print(f"Copying file to: {goal_path}\n")
-                shutil.copy(file_path, goal_path)
-
-        except Exception as e:
-                print(f"Error reading metadata: {e}")
-                print(f"Content that failed to be sorted: {file_path}")
-                shutil.copy(file_path, log_folder / f"{file_path.stem}{file_path.suffix}")
+        
     print("*" * 150)
     print("SORTING HAS BEEN COMPLETED. SEE DESTINATION FOLDER FOR RESULTS AND LOG FOLDER FOR POTENTIAL ERRORS.")
     print("*" * 150)
