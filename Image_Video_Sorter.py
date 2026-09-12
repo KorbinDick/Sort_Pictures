@@ -173,8 +173,7 @@ if input_folder_path.exists() and input_folder_path.is_dir():
                 print(f"Copying file to: {goal_path}\n")
                 shutil.copy(file_path, goal_path)
             
-        except Exception as e:
-            print(f"Error reading metadata: {e}")
+        except Exception:
             print(f"Content that failed to be sorted: {file_path}")
             shutil.copy(file_path, log_folder / f"{file_path.stem}{file_path.suffix}")
 
