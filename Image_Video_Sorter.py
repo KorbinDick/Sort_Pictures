@@ -41,6 +41,7 @@ import sys
 import shutil
 import keyboard
 import os
+import time
 
 
 #holds the original path for the folder to be organized
@@ -174,7 +175,8 @@ if input_folder_path.exists() and input_folder_path.is_dir():
                 shutil.copy(file_path, goal_path)
             
         except Exception:
-            print(f"Content that failed to be sorted: {file_path}")
+            print(f"***FAILED to be sorted: {file_path}\n")
+            time.sleep(1)
             shutil.copy(file_path, log_folder / f"{file_path.stem}{file_path.suffix}")
 
         
