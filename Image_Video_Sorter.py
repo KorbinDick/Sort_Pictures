@@ -176,7 +176,7 @@ if input_folder_path.exists() and input_folder_path.is_dir():
             
         except Exception:
             print(f"***FAILED to be sorted: {file_path}\n")
-            time.sleep(1)
+            time.sleep(5)
             shutil.copy(file_path, log_folder / f"{file_path.stem}{file_path.suffix}")
 
         
