@@ -58,7 +58,7 @@ non_image_folder = output_folder_path / "non_image"
 
 log_folder = output_folder_path / "log"
 
-exit_keys = ['esc', 'space']
+exit_keys = ['esc']
 
 # functions
 def confirm_action(prompt):
@@ -120,7 +120,7 @@ if input_folder_path.exists() and input_folder_path.is_dir():
                 with Image.open(file_path) as img:
                     date_taken = None
                                 
-                    if ext in (".jpg", ".jpeg"):
+                    if ext in (".jpg", ".jpeg", ".cr2"):
                         exif_data = img._getexif()
                         date_taken = exif_data.get(36867) if exif_data else None
                                 
